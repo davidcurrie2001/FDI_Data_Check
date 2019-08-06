@@ -148,17 +148,24 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
 mySpeciesList <- sort(unique(myTables[['Table_F_NAO']]$SPECIES))
 
 for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
-  
   firstValue <- 1 +   ((i-1)*6) 
   secondValue<- firstValue +5
-  
   if (secondValue > NROW(mySpeciesList)){
     secondValue <- NROW(mySpeciesList)
   }
-  
   PlotTableF(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
-  
 }
+
+for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
+  firstValue <- 1 +   ((i-1)*6) 
+  secondValue<- firstValue +5
+  if (secondValue > NROW(mySpeciesList)){
+    secondValue <- NROW(mySpeciesList)
+  }
+  PlotTableF(LogYScale = TRUE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+}
+
+```
 
 
 
