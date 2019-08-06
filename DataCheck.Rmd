@@ -85,7 +85,7 @@ PlotTableC(LogYScale = TRUE)
 
 ```
 
-## Table D NAO OFR Discards dength data
+## Table D NAO OFR Discards length data
 
 ```{r TableDNAO}
 
