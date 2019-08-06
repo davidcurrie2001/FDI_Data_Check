@@ -39,3 +39,6 @@ rsconnect/
 # Excel files
 *.xlsx
 *.xls
+
+# HTML
+*.html

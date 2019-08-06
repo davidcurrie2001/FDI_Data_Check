@@ -1,0 +1,104 @@
+---
+title: "FDI Data Checks"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(readxl)
+library(ggplot2)
+
+source("Functions.R")
+
+```
+
+## Introduction
+
+This project carries out some checks on data that is formatted for the FDI data call  - it does not perform the validation checks that are already performed by the FDI Data Upload portal but instead tries to look at the data and present plots etc to help the user decide whether the information content is correct.
+
+## Load the data
+
+First we'll load the data from the Excel files using the "readxl" package.  Your data files need to already be saved in a sub-directory of this project called "data".  We'll read in all columns as text to avoid problems when there is a NK in a numeric column.
+
+```{r loaddata}
+
+# Don't automatically convert strings to factors
+options(stringsAsFactors = FALSE)
+
+# Uncomment the next statement to remove everything from the workspace and start with a clean environment
+#rm(list = ls())
+
+
+myTables <- list(Table_A = read_excel("data/TABLE_A_CATCH.xlsx", col_types = "text")
+                 ,Table_B  =  read_excel("data/TABLE_B_REFUSAL_RATE.xlsx", col_types = "text")
+                 ,Table_C_NAO  =  read_excel("data/TABLE_C_NAO_OFR_DISCARDS_AGE.xlsx", col_types = "text")
+                 ,Table_D_NAO  =  read_excel("data/TABLE_D_NAO_OFR_DISCARDS_LENGTH.xlsx", col_types = "text")
+                 ,Table_E_NAO  =  read_excel("data/TABLE_E_NAO_OFR_LANDINGS_AGE.xlsx", col_types = "text")
+                 ,Table_F_NAO  =  read_excel("data/TABLE_F_NAO_OFR_LANDINGS_LENGTH.xlsx", col_types = "text")
+                 ,Table_G  =  read_excel("data/TABLE_G_EFFORT.xlsx", col_types = "text")
+                 ,Table_H  =  read_excel("data/TABLE_H_LANDINGS_BY_RECTANGLE.xlsx", col_types = "text")
+                 ,Table_I  =  read_excel("data/TABLE_I_EFFORT_BY_RECTANGLE.xlsx", col_types = "text")
+                 ,Table_J  =  read_excel("data/TABLE_J_CAPACITY.xlsx", col_types = "text")
+)
+                   
+                   
+
+
+```
+
+## Summary
+
+See what ranges of key variables we have in the tables
+
+
+```{r Summary}
+
+for (aTable in names(myTables)){
+  print(paste(aTable,'YEAR'))
+  #print(YearsPresentInData(myTables[[aTable]]))
+  print(ValuesPresentInData(myData=myTables[[aTable]], myColumn='YEAR'))
+}
+
+
+
+```
+
+
+## Table C NAO OFR Discards age data
+
+
+```{r TableCNAO}
+
+PlotTableC(LogYScale = FALSE)
+
+PlotTableC(LogYScale = TRUE)
+
+
+```
+
+## Table D NAO OFR Discards dength data
+
+```{r TableDNAO}
+
+# Too much data to have a single plot so we'll break it down into groups of 6 species
+
+
+mySpeciesList <- sort(unique(myTables[['Table_D_NAO']]$SPECIES))
+
+for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
+  
+  firstValue <- 1 +   ((i-1)*6) 
+  secondValue<- firstValue +5
+  
+  if (secondValue > NROW(mySpeciesList)){
+    secondValue <- NROW(mySpeciesList)
+  }
+  
+  PlotTableD(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  
+}
+
+
+
+```
