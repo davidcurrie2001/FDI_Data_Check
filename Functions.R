@@ -41,10 +41,20 @@ ValuesPresentInData <- function(myData,myColumn){
 
 
 
-PlotTableC <-function(LogYScale = FALSE){
+PlotTableC <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   
   #DataToPlot <- Table_C_NAO
   DataToPlot <- myTables[['Table_C_NAO']]
+  
+  # Filter the data if required
+  if(is.null(SpeciesToPlot)){
+    # Do nothing
+  }
+  else if (NROW(SpeciesToPlot)>1) {
+    DataToPlot<- DataToPlot[DataToPlot$SPECIES %in% SpeciesToPlot,]
+  } else {
+    DataToPlot<- DataToPlot[DataToPlot$SPECIES==SpeciesToPlot,]
+  }
   
   # Get rid of NKs
   DataToPlot <- DataToPlot[DataToPlot$AGE!="NK" & DataToPlot$NO_AGE!="NK" ,]
@@ -59,13 +69,13 @@ PlotTableC <-function(LogYScale = FALSE){
   DataToPlot <- aggregate(DataToPlot[,c("AGE","NO_AGE")], by=list(DataToPlot$YEAR , DataToPlot$AGE, DataToPlot$SPECIES), FUN=sum)
   
   # Rename the columns produced by the aggregate function
-  names(DataToPlot)[names(DataToPlot)=="Group.1"] <- "Year"
-  names(DataToPlot)[names(DataToPlot)=="Group.2"] <- "Age"
-  names(DataToPlot)[names(DataToPlot)=="Group.3"] <- "Species"
+  names(DataToPlot)[names(DataToPlot)=="Group.1"] <- "YearGroup"
+  names(DataToPlot)[names(DataToPlot)=="Group.2"] <- "AgeGroup"
+  names(DataToPlot)[names(DataToPlot)=="Group.3"] <- "SpeciesGroup"
   
   
   # Plot the data
-  p <- ggplot(DataToPlot, aes(x=Age, y=NO_AGE)) +
+  p <- ggplot(DataToPlot, aes(x=AgeGroup, y=NO_AGE)) +
     geom_point() +
     labs(title="Table C Discards by age", x="Age", y="Raised Number at Age") 
   
@@ -73,7 +83,7 @@ PlotTableC <-function(LogYScale = FALSE){
     p<-p+scale_y_log10()
   }
   
-  p<- p + facet_grid(vars(Species), vars(Year))
+  p<- p + facet_grid(vars(SpeciesGroup), vars(YearGroup))
   
   print(p)
   
@@ -109,13 +119,13 @@ PlotTableD <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   DataToPlot <- aggregate(DataToPlot[,c("LENGTH","NO_LENGTH")], by=list(DataToPlot$YEAR , DataToPlot$LENGTH, DataToPlot$SPECIES), FUN=sum)
   
   # Rename the columns produced by the aggregate function
-  names(DataToPlot)[names(DataToPlot)=="Group.1"] <- "Year"
-  names(DataToPlot)[names(DataToPlot)=="Group.2"] <- "Length"
-  names(DataToPlot)[names(DataToPlot)=="Group.3"] <- "Species"
+  names(DataToPlot)[names(DataToPlot)=="Group.1"] <- "YearGroup"
+  names(DataToPlot)[names(DataToPlot)=="Group.2"] <- "LengthGroup"
+  names(DataToPlot)[names(DataToPlot)=="Group.3"] <- "SpeciesGroup"
   
   
   # Plot the data
-  p <- ggplot(DataToPlot, aes(x=LENGTH, y=NO_LENGTH)) +
+  p <- ggplot(DataToPlot, aes(x=LengthGroup, y=NO_LENGTH)) +
     geom_point() +
     labs(title="Table D Discards by length", x="Length", y="Raised Number at Length") 
   
@@ -123,9 +133,107 @@ PlotTableD <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
     p<-p+scale_y_log10()
   }
   
-  p<- p + facet_grid(vars(Species), vars(Year))
+  p<- p + facet_grid(vars(SpeciesGroup), vars(YearGroup))
   
   print(p)
 
 }
+
+PlotTableE <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
+  
+  DataToPlot <- myTables[['Table_E_NAO']]
+  
+  # Filter the data if required
+  if(is.null(SpeciesToPlot)){
+    # Do nothing
+  }
+  else if (NROW(SpeciesToPlot)>1) {
+    DataToPlot<- DataToPlot[DataToPlot$SPECIES %in% SpeciesToPlot,]
+  } else {
+    DataToPlot<- DataToPlot[DataToPlot$SPECIES==SpeciesToPlot,]
+  }
+  
+  # Get rid of NKs
+  DataToPlot <- DataToPlot[DataToPlot$AGE!="NK" & DataToPlot$NO_AGE!="NK" ,]
+  
+  # Change Age to a number
+  DataToPlot$AGE <- as.numeric(DataToPlot$AGE)
+  
+  # Multiply NO_AGE by 1000 to get the actual raised number
+  DataToPlot$NO_AGE <- as.numeric(DataToPlot$NO_AGE) * 1000.0
+  
+  # Aggregate by Year, Species, and Age
+  DataToPlot <- aggregate(DataToPlot[,c("AGE","NO_AGE")], by=list(DataToPlot$YEAR , DataToPlot$AGE, DataToPlot$SPECIES), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(DataToPlot)[names(DataToPlot)=="Group.1"] <- "YearGroup"
+  names(DataToPlot)[names(DataToPlot)=="Group.2"] <- "AgeGroup"
+  names(DataToPlot)[names(DataToPlot)=="Group.3"] <- "SpeciesGroup"
+  
+  
+  # Plot the data
+  p <- ggplot(DataToPlot, aes(x=AgeGroup, y=NO_AGE)) +
+    geom_point() +
+    labs(title="Table E Landings by age", x="Age", y="Raised Number at Age") 
+  
+  if (LogYScale == TRUE) {
+    p<-p+scale_y_log10()
+  }
+  
+  p<- p + facet_grid(vars(SpeciesGroup), vars(YearGroup))
+  
+  print(p)
+  
+}
+
+
+PlotTableF <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
+  
+  DataToPlot <- myTables[['Table_F_NAO']]
+  
+  # Filter the data if required
+  if(is.null(SpeciesToPlot)){
+    # Do nothing
+  }
+  else if (NROW(SpeciesToPlot)>1) {
+    DataToPlot<- DataToPlot[DataToPlot$SPECIES %in% SpeciesToPlot,]
+  } else {
+    DataToPlot<- DataToPlot[DataToPlot$SPECIES==SpeciesToPlot,]
+  }
+  
+  
+  # Get rid of NKs
+  DataToPlot <- DataToPlot[DataToPlot$LENGTH!="NK" & DataToPlot$NO_LENGTH!="NK" ,]
+  
+  # Change Age to a number
+  DataToPlot$LENGTH <- as.numeric(DataToPlot$LENGTH)
+  
+  # Multiply NO_AGE by 1000 to get the actual raised number
+  DataToPlot$NO_LENGTH <- as.numeric(DataToPlot$NO_LENGTH) * 1000.0
+  
+  # Aggregate by Year, Species, and Age
+  DataToPlot <- aggregate(DataToPlot[,c("LENGTH","NO_LENGTH")], by=list(DataToPlot$YEAR , DataToPlot$LENGTH, DataToPlot$SPECIES), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(DataToPlot)[names(DataToPlot)=="Group.1"] <- "YearGroup"
+  names(DataToPlot)[names(DataToPlot)=="Group.2"] <- "LengthGroup"
+  names(DataToPlot)[names(DataToPlot)=="Group.3"] <- "SpeciesGroup"
+  
+  
+  # Plot the data
+  p <- ggplot(DataToPlot, aes(x=LengthGroup, y=NO_LENGTH)) +
+    geom_point() +
+    labs(title="Table F Landings by length", x="Length", y="Raised Number at Length") 
+  
+  if (LogYScale == TRUE) {
+    p<-p+scale_y_log10()
+  }
+  
+  p<- p + facet_grid(vars(SpeciesGroup), vars(YearGroup))
+  
+  print(p)
+  
+}
+
+
 

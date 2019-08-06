@@ -55,9 +55,17 @@ See what ranges of key variables we have in the tables
 ```{r Summary}
 
 for (aTable in names(myTables)){
-  print(paste(aTable,'YEAR'))
-  #print(YearsPresentInData(myTables[[aTable]]))
-  print(ValuesPresentInData(myData=myTables[[aTable]], myColumn='YEAR'))
+  print(aTable)
+  colToCheck <- 'YEAR'
+  print(colToCheck)
+  print(ValuesPresentInData(myData=myTables[[aTable]], myColumn=colToCheck))
+}
+
+for (aTable in names(myTables)){
+  print(aTable)
+  colToCheck <- 'SPECIES'
+  print(colToCheck)
+  print(ValuesPresentInData(myData=myTables[[aTable]], myColumn=colToCheck))
 }
 
 
@@ -82,8 +90,6 @@ PlotTableC(LogYScale = TRUE)
 ```{r TableDNAO}
 
 # Too much data to have a single plot so we'll break it down into groups of 6 species
-
-
 mySpeciesList <- sort(unique(myTables[['Table_D_NAO']]$SPECIES))
 
 for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
@@ -102,3 +108,57 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
 
 
 ```
+
+## Table E NAO OFR Landings age data
+
+
+```{r TableENAO}
+
+# Too much data to have a single plot so we'll break it down into groups of 6 species
+mySpeciesList <- sort(unique(myTables[['Table_E_NAO']]$SPECIES))
+
+for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
+  firstValue <- 1 +   ((i-1)*6) 
+  secondValue<- firstValue +5
+  if (secondValue > NROW(mySpeciesList)){
+    secondValue <- NROW(mySpeciesList)
+  }
+  PlotTableE(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+}
+
+for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
+  firstValue <- 1 +   ((i-1)*6) 
+  secondValue<- firstValue +5
+  if (secondValue > NROW(mySpeciesList)){
+    secondValue <- NROW(mySpeciesList)
+  }
+  PlotTableE(LogYScale = TRUE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+}
+
+
+
+
+```
+
+## Table F NAO OFR Landings length data
+
+```{r TableFNAO}
+
+# Too much data to have a single plot so we'll break it down into groups of 6 species
+mySpeciesList <- sort(unique(myTables[['Table_F_NAO']]$SPECIES))
+
+for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
+  
+  firstValue <- 1 +   ((i-1)*6) 
+  secondValue<- firstValue +5
+  
+  if (secondValue > NROW(mySpeciesList)){
+    secondValue <- NROW(mySpeciesList)
+  }
+  
+  PlotTableF(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  
+}
+
+
+
