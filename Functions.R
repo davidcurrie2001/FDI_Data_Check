@@ -87,6 +87,7 @@ PlotTableA<-function(){
 
 }
 
+# Produce boxplot of ages
 AgeBoxPlot <-function(Data, PlotTitle){
   
   DataToPlot <- Data
@@ -99,7 +100,7 @@ AgeBoxPlot <-function(Data, PlotTitle){
   
 }
 
-
+# Produce boxplot of lengths
 LengthBoxPlot <-function(Data, PlotTitle){
   
   DataToPlot <- Data
@@ -122,8 +123,10 @@ LengthBoxPlot <-function(Data, PlotTitle){
 # Function used to plot out numbers at age by species and year for Table C and E
 PlotNoAtAge <-function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle){
   
-  #DataToPlot <- Table_C_NAO
-  #DataToPlot <- myTables[['Table_C_NAO']]
+  if (LogYScale == TRUE) {
+    PlotTitle <- paste(PlotTitle,"(Log scale Y axis)")
+  }
+  
   DataToPlot <- Data
   
   # Filter the data if required
@@ -186,6 +189,10 @@ PlotNoAtAge <-function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle)
 
 # Function used to plot out numbers at length by species and year for Table D and F
 PlotNoAtLength <- function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle){
+  
+  if (LogYScale == TRUE) {
+    PlotTitle <- paste(PlotTitle,"(Log scale Y axis)")
+  }
   
   DataToPlot <- Data
   
