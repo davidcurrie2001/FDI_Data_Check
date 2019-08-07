@@ -1,22 +1,5 @@
 
-YearsPresentInData <- function(myData){
-  
-  returnText <- ""
-  
-  
-  if("YEAR" %in% names(myData)){
-    
-    returnText <- paste(NROW(unique(myData$YEAR)),"year(s) present in the data:")
-    years <- paste(sort(unique(myData$YEAR)),collapse=",")
-    returnText <- paste(returnText, years)
-    
-  } else {
-    returnText <- paste("Column 'YEAR' not found in the data")
-  }
-  
-  returnText
-  
-}
+
 
 ValuesPresentInData <- function(myData,myColumn){
   
@@ -41,10 +24,14 @@ ValuesPresentInData <- function(myData,myColumn){
 
 
 
-PlotTableC <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
+
+
+# Function used to plot out numbers at age by species and year for Table C and E
+PlotNoAtAge <-function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle){
   
   #DataToPlot <- Table_C_NAO
-  DataToPlot <- myTables[['Table_C_NAO']]
+  #DataToPlot <- myTables[['Table_C_NAO']]
+  DataToPlot <- Data
   
   # Filter the data if required
   if(is.null(SpeciesToPlot)){
@@ -77,8 +64,8 @@ PlotTableC <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   # Plot the data
   p <- ggplot(DataToPlot, aes(x=AgeGroup, y=NO_AGE)) +
     geom_point() +
-    labs(title="Table C Discards by age", x="Age", y="Raised Number at Age") 
-  
+    labs(title=PlotTitle, x="Age", y="Raised Number at Age") 
+
   if (LogYScale == TRUE) {
     p<-p+scale_y_log10()
   }
@@ -89,11 +76,10 @@ PlotTableC <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   
 }
 
-
-PlotTableD <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
-
-  #DataToPlot <- Table_D_NAO
-  DataToPlot <- myTables[['Table_D_NAO']]
+# Function used to plot out numbers at length by species and year for Table D and F
+PlotNoAtLength <- function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle){
+  
+  DataToPlot <- Data
   
   # Filter the data if required
   if(is.null(SpeciesToPlot)){
@@ -127,8 +113,8 @@ PlotTableD <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   # Plot the data
   p <- ggplot(DataToPlot, aes(x=LengthGroup, y=NO_LENGTH)) +
     geom_point() +
-    labs(title="Table D Discards by length", x="Length", y="Raised Number at Length") 
-  
+    labs(title=PlotTitle, x="Length", y="Raised Number at Length") 
+
   if (LogYScale == TRUE) {
     p<-p+scale_y_log10()
   }
@@ -136,103 +122,29 @@ PlotTableD <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   p<- p + facet_grid(vars(SpeciesGroup), vars(YearGroup))
   
   print(p)
+  
+}
 
+
+PlotTableC <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
+  
+  PlotNoAtAge(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_C_NAO']], PlotTitle = "Table C Discards by age" )
+}
+
+PlotTableD <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
+
+  PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_D_NAO']], PlotTitle = "Table D Discards by length" )
 }
 
 PlotTableE <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   
-  DataToPlot <- myTables[['Table_E_NAO']]
-  
-  # Filter the data if required
-  if(is.null(SpeciesToPlot)){
-    # Do nothing
-  }
-  else if (NROW(SpeciesToPlot)>1) {
-    DataToPlot<- DataToPlot[DataToPlot$SPECIES %in% SpeciesToPlot,]
-  } else {
-    DataToPlot<- DataToPlot[DataToPlot$SPECIES==SpeciesToPlot,]
-  }
-  
-  # Get rid of NKs
-  DataToPlot <- DataToPlot[DataToPlot$AGE!="NK" & DataToPlot$NO_AGE!="NK" ,]
-  
-  # Change Age to a number
-  DataToPlot$AGE <- as.numeric(DataToPlot$AGE)
-  
-  # Multiply NO_AGE by 1000 to get the actual raised number
-  DataToPlot$NO_AGE <- as.numeric(DataToPlot$NO_AGE) * 1000.0
-  
-  # Aggregate by Year, Species, and Age
-  DataToPlot <- aggregate(DataToPlot[,c("AGE","NO_AGE")], by=list(DataToPlot$YEAR , DataToPlot$AGE, DataToPlot$SPECIES), FUN=sum)
-  
-  # Rename the columns produced by the aggregate function
-  names(DataToPlot)[names(DataToPlot)=="Group.1"] <- "YearGroup"
-  names(DataToPlot)[names(DataToPlot)=="Group.2"] <- "AgeGroup"
-  names(DataToPlot)[names(DataToPlot)=="Group.3"] <- "SpeciesGroup"
-  
-  
-  # Plot the data
-  p <- ggplot(DataToPlot, aes(x=AgeGroup, y=NO_AGE)) +
-    geom_point() +
-    labs(title="Table E Landings by age", x="Age", y="Raised Number at Age") 
-  
-  if (LogYScale == TRUE) {
-    p<-p+scale_y_log10()
-  }
-  
-  p<- p + facet_grid(vars(SpeciesGroup), vars(YearGroup))
-  
-  print(p)
-  
+  PlotNoAtAge(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_E_NAO']], PlotTitle = "Table E Landings by age" )
 }
 
 
 PlotTableF <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   
-  DataToPlot <- myTables[['Table_F_NAO']]
-  
-  # Filter the data if required
-  if(is.null(SpeciesToPlot)){
-    # Do nothing
-  }
-  else if (NROW(SpeciesToPlot)>1) {
-    DataToPlot<- DataToPlot[DataToPlot$SPECIES %in% SpeciesToPlot,]
-  } else {
-    DataToPlot<- DataToPlot[DataToPlot$SPECIES==SpeciesToPlot,]
-  }
-  
-  
-  # Get rid of NKs
-  DataToPlot <- DataToPlot[DataToPlot$LENGTH!="NK" & DataToPlot$NO_LENGTH!="NK" ,]
-  
-  # Change Age to a number
-  DataToPlot$LENGTH <- as.numeric(DataToPlot$LENGTH)
-  
-  # Multiply NO_AGE by 1000 to get the actual raised number
-  DataToPlot$NO_LENGTH <- as.numeric(DataToPlot$NO_LENGTH) * 1000.0
-  
-  # Aggregate by Year, Species, and Age
-  DataToPlot <- aggregate(DataToPlot[,c("LENGTH","NO_LENGTH")], by=list(DataToPlot$YEAR , DataToPlot$LENGTH, DataToPlot$SPECIES), FUN=sum)
-  
-  # Rename the columns produced by the aggregate function
-  names(DataToPlot)[names(DataToPlot)=="Group.1"] <- "YearGroup"
-  names(DataToPlot)[names(DataToPlot)=="Group.2"] <- "LengthGroup"
-  names(DataToPlot)[names(DataToPlot)=="Group.3"] <- "SpeciesGroup"
-  
-  
-  # Plot the data
-  p <- ggplot(DataToPlot, aes(x=LengthGroup, y=NO_LENGTH)) +
-    geom_point() +
-    labs(title="Table F Landings by length", x="Length", y="Raised Number at Length") 
-  
-  if (LogYScale == TRUE) {
-    p<-p+scale_y_log10()
-  }
-  
-  p<- p + facet_grid(vars(SpeciesGroup), vars(YearGroup))
-  
-  print(p)
-  
+  PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_F_NAO']], PlotTitle = "Table F Landings by length" )
 }
 
 
