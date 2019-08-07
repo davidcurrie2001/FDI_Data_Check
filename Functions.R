@@ -68,24 +68,56 @@ PlotTableA<-function(){
   
   # Plot the data
   DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByWeight$SpeciesGroup ,]
-  p <- ggplot(DataToPlot, aes(x=SpeciesGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+  p <- ggplot(DataToPlot, aes(x=reorder(SpeciesGroup,-TOTWGHTLANDG) , y=TOTWGHTLANDG, shape = YearGroup)) +
     geom_point() +
     labs(title="Table A Top 10 Species by Landings", x="Species", y="Landings Live Weight (T)") 
   print(p)
   
   DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByValue$SpeciesGroup ,]
-  p <- ggplot(DataToPlot, aes(x=SpeciesGroup, y=TOTVALLANDG, shape = YearGroup)) +
+  p <- ggplot(DataToPlot, aes(x=reorder(SpeciesGroup,-TOTVALLANDG), y=TOTVALLANDG, shape = YearGroup)) +
     geom_point() +
     labs(title="Table A Top 10 Species by Value", x="Species", y="Landings Value (€)") 
   print(p)
   
   DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByDiscards$SpeciesGroup ,]
-  p <- ggplot(DataToPlot, aes(x=SpeciesGroup, y=DISCARDS, shape = YearGroup)) +
+  p <- ggplot(DataToPlot, aes(x=reorder(SpeciesGroup,-DISCARDS), y=DISCARDS, shape = YearGroup)) +
     geom_point() +
     labs(title="Table A Top 10 Species by Discards", x="Species", y="Discards (T)") 
   print(p)
 
 }
+
+AgeBoxPlot <-function(Data, PlotTitle){
+  
+  DataToPlot <- Data
+  
+  # Get rid of NKs
+  DataToPlot <- DataToPlot[DataToPlot$AGE!="NK",c("AGE")]
+  DataToPlot$AGE <- as.numeric(DataToPlot$AGE)
+  
+  boxplot(DataToPlot$AGE, main=PlotTitle, ylab="Age")
+  
+}
+
+
+LengthBoxPlot <-function(Data, PlotTitle){
+  
+  DataToPlot <- Data
+  
+  # Get rid of NKs
+  DataToPlot <- DataToPlot[DataToPlot$LENGTH!="NK",]
+  DataToPlot$LENGTH <- as.numeric(DataToPlot$LENGTH)
+  
+  # Change mm to cm if required
+  DataToPlot[DataToPlot$LENGTH_UNIT=="mm",c("LENGTH")]<-DataToPlot[DataToPlot$LENGTH_UNIT=="mm",c("LENGTH")]/10.0
+  
+  
+  boxplot(DataToPlot$LENGTH, main=PlotTitle, ylab="Length (cm)")
+  
+}
+
+
+
 
 # Function used to plot out numbers at age by species and year for Table C and E
 PlotNoAtAge <-function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle){
@@ -186,6 +218,9 @@ PlotNoAtLength <- function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTi
   # Change Age to a number
   DataToPlot$LENGTH <- as.numeric(DataToPlot$LENGTH)
   
+  # Change mm to cm if required
+  DataToPlot[DataToPlot$LENGTH_UNIT=="mm",c("LENGTH")]<-DataToPlot[DataToPlot$LENGTH_UNIT=="mm",c("LENGTH")]/10.0
+  
   # Multiply NO_AGE by 1000 to get the actual raised number
   DataToPlot$NO_LENGTH <- as.numeric(DataToPlot$NO_LENGTH) * 1000.0
   
@@ -201,7 +236,7 @@ PlotNoAtLength <- function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTi
   # Plot the data
   p <- ggplot(DataToPlot, aes(x=LengthGroup, y=NO_LENGTH)) +
     geom_point() +
-    labs(title=PlotTitle, x="Length", y="Raised Number at Length") 
+    labs(title=PlotTitle, x="Length (cm)", y="Raised Number at Length") 
   
   if (LogYScale == TRUE) {
     p<-p+scale_y_log10()

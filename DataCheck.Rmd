@@ -89,6 +89,8 @@ PlotTableA()
 
 ```{r TableCNAO}
 
+AgeBoxPlot(Data = myTables[['Table_C_NAO']], PlotTitle="Table C Ages")
+
 PlotTableC(LogYScale = FALSE)
 
 PlotTableC(LogYScale = TRUE)
@@ -100,13 +102,17 @@ PlotTableC(LogYScale = TRUE)
 
 ```{r TableDNAO}
 
-# Too much data to have a single plot so we'll break it down into groups of 6 species
+LengthBoxPlot(Data = myTables[['Table_D_NAO']], PlotTitle="Table D Lengths")
+
+# Too much data to have a single plot so we'll break it down into groups of species
 mySpeciesList <- sort(unique(myTables[['Table_D_NAO']]$SPECIES))
 
-for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
+numberInGroup <- 8.0
+
+for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
   
-  firstValue <- 1 +   ((i-1)*6) 
-  secondValue<- firstValue +5
+  firstValue <- 1 +   ((i-1)*numberInGroup) 
+  secondValue<- firstValue +(numberInGroup -1)
   
   if (secondValue > NROW(mySpeciesList)){
     secondValue <- NROW(mySpeciesList)
@@ -125,12 +131,17 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
 
 ```{r TableENAO}
 
-# Too much data to have a single plot so we'll break it down into groups of 6 species
+AgeBoxPlot(Data = myTables[['Table_E_NAO']], PlotTitle="Table E Ages")
+
+# Too much data to have a single plot so we'll break it down into groups of species
 mySpeciesList <- sort(unique(myTables[['Table_E_NAO']]$SPECIES))
 
-for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
-  firstValue <- 1 +   ((i-1)*6) 
-  secondValue<- firstValue +5
+numberInGroup <- 8.0
+
+for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
+  firstValue <- 1 +   ((i-1)*numberInGroup) 
+  secondValue<- firstValue +(numberInGroup - 1)
+  
   if (secondValue > NROW(mySpeciesList)){
     secondValue <- NROW(mySpeciesList)
   }
@@ -155,12 +166,17 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
 
 ```{r TableFNAO}
 
-# Too much data to have a single plot so we'll break it down into groups of 6 species
+LengthBoxPlot(Data = myTables[['Table_F_NAO']], PlotTitle="Table F Lengths")
+
+# Too much data to have a single plot so we'll break it down into groups of species
 mySpeciesList <- sort(unique(myTables[['Table_F_NAO']]$SPECIES))
 
-for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
-  firstValue <- 1 +   ((i-1)*6) 
-  secondValue<- firstValue +5
+numberInGroup <- 8.0
+
+for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
+  firstValue <- 1 +   ((i-1)*numberInGroup) 
+  secondValue<- firstValue + (numberInGroup - 1)
+  
   if (secondValue > NROW(mySpeciesList)){
     secondValue <- NROW(mySpeciesList)
   }
