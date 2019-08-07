@@ -22,9 +22,70 @@ ValuesPresentInData <- function(myData,myColumn){
   
 }
 
+# Function to produce some summary plots of Table A for sanity checking
+PlotTableA<-function(){
 
+  DataToCheck <- myTables[['Table_A']]
+  
+  # Remove the BSA values first so we're not double counting
+  DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
 
+  DataToCheck <- DataToCheck[,c("YEAR","SPECIES", "TOTWGHTLANDG","TOTVALLANDG","DISCARDS")]
+  
+  # Change NK in Discards to 0 so we can aggregate - (not really correct thing to do 
+  # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
+  DataToCheck[DataToCheck$DISCARDS=='NK',c("DISCARDS")] <- 0
+  
+  # Change columns to numeric
+  DataToCheck$TOTWGHTLANDG <- as.numeric(DataToCheck$TOTWGHTLANDG)
+  DataToCheck$TOTVALLANDG <- as.numeric(DataToCheck$TOTVALLANDG)
+  DataToCheck$DISCARDS <- as.numeric(DataToCheck$DISCARDS)
+  
+  # Aggregate by Year and species
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG","DISCARDS")], by=list(DataToCheck$YEAR , DataToCheck$SPECIES), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "SpeciesGroup"
+  
+  # Aggrgeate by species
+  AggDataToCheckBySpecies <- aggregate(AggDataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG","DISCARDS")], by=list(AggDataToCheck$SpeciesGroup), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheckBySpecies)[names(AggDataToCheckBySpecies)=="Group.1"] <- "SpeciesGroup"
+  
+  # Calculate Top 10 species by weight
+  AggDataToCheckBySpecies <- AggDataToCheckBySpecies[order(-AggDataToCheckBySpecies$TOTWGHTLANDG),]
+  Top10ByWeight <- AggDataToCheckBySpecies[1:10,]
+  
+  # Calculate Top 10 species by value
+  AggDataToCheckBySpecies <- AggDataToCheckBySpecies[order(-AggDataToCheckBySpecies$TOTVALLANDG),]
+  Top10ByValue <- AggDataToCheckBySpecies[1:10,]
+  
+  # Calculate Top 10 species by discards
+  AggDataToCheckBySpecies <- AggDataToCheckBySpecies[order(-AggDataToCheckBySpecies$DISCARDS),]
+  Top10ByDiscards <- AggDataToCheckBySpecies[1:10,]
+  
+  # Plot the data
+  DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByWeight$SpeciesGroup ,]
+  p <- ggplot(DataToPlot, aes(x=SpeciesGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Table A Top 10 Species by Landings", x="Species", y="Landings Live Weight (T)") 
+  print(p)
+  
+  DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByValue$SpeciesGroup ,]
+  p <- ggplot(DataToPlot, aes(x=SpeciesGroup, y=TOTVALLANDG, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Table A Top 10 Species by Value", x="Species", y="Landings Value (€)") 
+  print(p)
+  
+  DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByDiscards$SpeciesGroup ,]
+  p <- ggplot(DataToPlot, aes(x=SpeciesGroup, y=DISCARDS, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Table A Top 10 Species by Discards", x="Species", y="Discards (T)") 
+  print(p)
 
+}
 
 # Function used to plot out numbers at age by species and year for Table C and E
 PlotNoAtAge <-function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle){
@@ -43,8 +104,23 @@ PlotNoAtAge <-function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle)
     DataToPlot<- DataToPlot[DataToPlot$SPECIES==SpeciesToPlot,]
   }
   
+  # Check NKs
+  NKData <- DataToPlot[DataToPlot$AGE=="NK" | DataToPlot$NO_AGE=="NK" ,]
+  
+  if (NROW(NKData) >0) {
+    print("Checking how many rows per species have NK 'AGE' or 'NO_AGE' - these are excluded")
+    AggNKData <- aggregate(NKData[,c("COUNTRY")], by=list(NKData$SPECIES), FUN=length)
+    names(AggNKData)[names(AggNKData)=="Group.1"] <- "SpeciesGroup"
+    names(AggNKData)[names(AggNKData)=="COUNTRY"] <- "Number_Of_NK_Rows"
+    print(AggNKData[,])
+    #kable(AggNKData,caption = "Rows per species with NK 'AGE' or 'NO_AGE' - these are excluded")
+  
+  }
+  
   # Get rid of NKs
   DataToPlot <- DataToPlot[DataToPlot$AGE!="NK" & DataToPlot$NO_AGE!="NK" ,]
+  
+  
   
   # Change Age to a number
   DataToPlot$AGE <- as.numeric(DataToPlot$AGE)
@@ -65,7 +141,7 @@ PlotNoAtAge <-function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTitle)
   p <- ggplot(DataToPlot, aes(x=AgeGroup, y=NO_AGE)) +
     geom_point() +
     labs(title=PlotTitle, x="Age", y="Raised Number at Age") 
-
+  
   if (LogYScale == TRUE) {
     p<-p+scale_y_log10()
   }
@@ -91,6 +167,18 @@ PlotNoAtLength <- function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTi
     DataToPlot<- DataToPlot[DataToPlot$SPECIES==SpeciesToPlot,]
   }
   
+  # Check NKs
+  NKData <- DataToPlot[DataToPlot$LENGTH=="NK" | DataToPlot$NO_LENGTH=="NK" ,]
+  
+  if (NROW(NKData) >0) {
+    print("Checking how many rows per species have NK 'LENGTH' or 'NO_LENGTH' - these are excluded")
+    AggNKData <- aggregate(NKData[,c("COUNTRY")], by=list(NKData$SPECIES), FUN=length)
+    names(AggNKData)[names(AggNKData)=="Group.1"] <- "SpeciesGroup"
+    names(AggNKData)[names(AggNKData)=="COUNTRY"] <- "Number_Of_NK_Rows"
+    print(AggNKData[,])
+    #kable(AggNKData,caption = "Rows per species with NK 'AGE' or 'NO_AGE' - these are excluded")
+    
+  }
   
   # Get rid of NKs
   DataToPlot <- DataToPlot[DataToPlot$LENGTH!="NK" & DataToPlot$NO_LENGTH!="NK" ,]
@@ -114,7 +202,7 @@ PlotNoAtLength <- function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTi
   p <- ggplot(DataToPlot, aes(x=LengthGroup, y=NO_LENGTH)) +
     geom_point() +
     labs(title=PlotTitle, x="Length", y="Raised Number at Length") 
-
+  
   if (LogYScale == TRUE) {
     p<-p+scale_y_log10()
   }
@@ -132,7 +220,7 @@ PlotTableC <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
 }
 
 PlotTableD <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
-
+  
   PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_D_NAO']], PlotTitle = "Table D Discards by length" )
 }
 
@@ -146,6 +234,4 @@ PlotTableF <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   
   PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_F_NAO']], PlotTitle = "Table F Landings by length" )
 }
-
-
 

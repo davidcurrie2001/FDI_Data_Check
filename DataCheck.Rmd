@@ -8,6 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 library(readxl)
 library(ggplot2)
+library(knitr)
 
 source("Functions.R")
 
@@ -71,6 +72,16 @@ for (aTable in names(myTables)){
 
 
 ```
+
+## Table A Catch Summary
+
+```{r TableA}
+
+PlotTableA()
+
+
+```
+
 
 
 ## Table C NAO OFR Discards age data
