@@ -27,10 +27,10 @@ PlotTableA<-function(){
 
   DataToCheck <- myTables[['Table_A']]
   
-  # Remove the BSA values first so we're not double counting
+  # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
 
-  DataToCheck <- DataToCheck[,c("YEAR","SPECIES", "TOTWGHTLANDG","TOTVALLANDG","DISCARDS")]
+  #DataToCheck <- DataToCheck[,c("YEAR","SPECIES", "TOTWGHTLANDG","TOTVALLANDG","DISCARDS")]
   
   # Change NK in Discards to 0 so we can aggregate - (not really correct thing to do 
   # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
@@ -61,6 +61,7 @@ PlotTableA<-function(){
   # Calculate Top 10 species by value
   AggDataToCheckBySpecies <- AggDataToCheckBySpecies[order(-AggDataToCheckBySpecies$TOTVALLANDG),]
   Top10ByValue <- AggDataToCheckBySpecies[1:10,]
+  Top20ByValue <- AggDataToCheckBySpecies[1:20,]
   
   # Calculate Top 10 species by discards
   AggDataToCheckBySpecies <- AggDataToCheckBySpecies[order(-AggDataToCheckBySpecies$DISCARDS),]
@@ -76,7 +77,7 @@ PlotTableA<-function(){
   DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByValue$SpeciesGroup ,]
   p <- ggplot(DataToPlot, aes(x=reorder(SpeciesGroup,-TOTVALLANDG), y=TOTVALLANDG, shape = YearGroup)) +
     geom_point() +
-    labs(title="Table A Top 10 Species by Value", x="Species", y="Landings Value (€)") 
+    labs(title="Table A Top 10 Species by Value", x="Species", y="Landings Value (Euro)") 
   print(p)
   
   DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByDiscards$SpeciesGroup ,]
@@ -85,6 +86,155 @@ PlotTableA<-function(){
     labs(title="Table A Top 10 Species by Discards", x="Species", y="Discards (T)") 
   print(p)
 
+  # Aggregate by Year and vessel size
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG","DISCARDS")], by=list(DataToCheck$YEAR , DataToCheck$VESSEL_LENGTH), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "VesselLengthGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  # Plot the data
+  p <- ggplot(DataToPlot, aes(x=VesselLengthGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Landings by Vessel Length", x="Vessel Length", y="Landings Live Weight (T)") 
+  print(p)
+  
+  # Aggregate by Year and Fishing Tech
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG","DISCARDS")], by=list(DataToCheck$YEAR , DataToCheck$FISHING_TECH), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "FishingTechGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  # Plot the data
+  p <- ggplot(DataToPlot, aes(x=FishingTechGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Landings by fishing tech", x="Fishing Tech", y="Landings Live Weight (T)") 
+  print(p)
+  
+  # Aggregate by Year and Gear
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG","DISCARDS")], by=list(DataToCheck$YEAR , DataToCheck$GEAR_TYPE), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "GearGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  # Plot the data
+  p <- ggplot(DataToPlot, aes(x=GearGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Landings by gear", x="Fishing Gear", y="Landings Live Weight (T)")  +
+    theme(axis.text.x = element_text(angle = 90))
+  print(p)
+  
+  # Aggregate by Year and Sub-region
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG","DISCARDS")], by=list(DataToCheck$YEAR , DataToCheck$SUB_REGION), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "AreaGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  # Plot the data
+  p <- ggplot(DataToPlot, aes(x=AreaGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Landings by area", x="Area", y="Landings Live Weight (T)")  +
+    theme(axis.text.x = element_text(angle = 90))
+  print(p)
+
+
+  
+}
+
+## Compare Table A, with Tables C, D, E, and F and see if there are any important gaps
+CompareTableA<-function(){
+  
+  
+  DataToCheck <- myTables[['Table_A']]
+  
+  # IMPORTANT! Remove the BSA rows first so we're not double counting
+  DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
+  
+
+  # Change NK in Discards to 0 so we can aggregate - (not really correct thing to do 
+  # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
+  DataToCheck[DataToCheck$DISCARDS=='NK',c("DISCARDS")] <- 0
+  
+  # Change columns to numeric
+  DataToCheck$TOTWGHTLANDG <- as.numeric(DataToCheck$TOTWGHTLANDG)
+  DataToCheck$TOTVALLANDG <- as.numeric(DataToCheck$TOTVALLANDG)
+  DataToCheck$DISCARDS <- as.numeric(DataToCheck$DISCARDS)
+  
+  # Calculate Top 20 species by value
+  AggDataToCheckBySpecies <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG","DISCARDS")], by=list(DataToCheck$SPECIES), FUN=sum)
+  names(AggDataToCheckBySpecies)[names(AggDataToCheckBySpecies)=="Group.1"] <- "SpeciesGroup"
+  AggDataToCheckBySpecies <- AggDataToCheckBySpecies[order(-AggDataToCheckBySpecies$TOTVALLANDG),]
+  Top10ByValue <- AggDataToCheckBySpecies[1:10,]
+  
+  
+  # Aggregate by Year, Domains, and species
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG","DISCARDS")], by=list(DataToCheck$YEAR, DataToCheck$DOMAIN_LANDINGS, DataToCheck$DOMAIN_DISCARDS, DataToCheck$SPECIES), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "DomainLandGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.3"] <- "DomainDiscardGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.4"] <- "SpeciesGroup"
+  
+  names(AggDataToCheck)[names(AggDataToCheck)=="TOTWGHTLANDG"] <- "A_TOTWGHTLANDG"
+  names(AggDataToCheck)[names(AggDataToCheck)=="TOTVALLANDG"] <- "A_TOTVALLANDG"
+  names(AggDataToCheck)[names(AggDataToCheck)=="DISCARDS"] <- "A_DISCARDS"
+  
+  TabC<-unique(myTables[['Table_C_NAO']][,c("YEAR", "DOMAIN_DISCARDS", "TOTWGHTLANDG", "DISCARDS")])
+  
+  AC <- merge(x=AggDataToCheck, y = TabC, by.x=c("YearGroup","DomainDiscardGroup"), by.y=c("YEAR","DOMAIN_DISCARDS"),all=TRUE )
+  
+  names(AC)[names(AC)=="TOTWGHTLANDG"] <- "C_TOTWGHTLANDG"
+  names(AC)[names(AC)=="DISCARDS"] <- "C_DISCARDS"
+  
+  TabD<-unique(myTables[['Table_D_NAO']][,c("YEAR", "DOMAIN_DISCARDS", "TOTWGHTLANDG", "DISCARDS")])
+  
+  ACD <- merge(x=AC, y = TabD, by.x=c("YearGroup","DomainDiscardGroup"), by.y=c("YEAR","DOMAIN_DISCARDS"),all=TRUE )
+  
+  names(ACD)[names(ACD)=="TOTWGHTLANDG"] <- "D_TOTWGHTLANDG"
+  names(ACD)[names(ACD)=="DISCARDS"] <- "D_DISCARDS"
+  
+  TabE<-unique(myTables[['Table_E_NAO']][,c("YEAR", "DOMAIN_LANDINGS", "TOTWGHTLANDG")])
+  
+  ACDE <- merge(x=ACD, y = TabE, by.x=c("YearGroup","DomainLandGroup"), by.y=c("YEAR","DOMAIN_LANDINGS"),all=TRUE )
+  
+  names(ACDE)[names(ACDE)=="TOTWGHTLANDG"] <- "E_TOTWGHTLANDG"
+  
+  TabF<-unique(myTables[['Table_F_NAO']][,c("YEAR", "DOMAIN_LANDINGS", "TOTWGHTLANDG")])
+  
+  ACDEF <- merge(x=ACDE, y = TabF, by.x=c("YearGroup","DomainLandGroup"), by.y=c("YEAR","DOMAIN_LANDINGS"),all=TRUE )
+  
+  names(ACDEF)[names(ACDEF)=="TOTWGHTLANDG"] <- "F_TOTWGHTLANDG"
+  
+  #summaryACDEF <- aggregate(ACDEF[,], by=list(ACDEF$YearGroup, ACDEF$SpeciesGroup), FUN=length)
+  
+  summaryACDEF <- aggregate(ACDEF[,], by=list(ACDEF$YearGroup, ACDEF$SpeciesGroup), FUN=function(x) { sum(!is.na(x))})
+  
+  names(summaryACDEF)[names(summaryACDEF)=="Group.1"] <- "Year"
+  names(summaryACDEF)[names(summaryACDEF)=="Group.2"] <- "Species"
+  names(summaryACDEF)[names(summaryACDEF)=="DomainLandGroup"] <- "Landings_Domains"
+  names(summaryACDEF)[names(summaryACDEF)=="DomainDiscardGroup"] <- "Discards_Domains"
+  names(summaryACDEF)[names(summaryACDEF)=="C_DISCARDS"] <- "C_Domains"
+  names(summaryACDEF)[names(summaryACDEF)=="D_DISCARDS"] <- "D_Domains"
+  names(summaryACDEF)[names(summaryACDEF)=="E_TOTWGHTLANDG"] <- "E_Domains"
+  names(summaryACDEF)[names(summaryACDEF)=="F_TOTWGHTLANDG"] <- "F_Domains"
+  
+
+  summaryFinal <- merge(x=summaryACDEF, y=Top10ByValue, by.x = "Species", by.y="SpeciesGroup")
+  
+  summaryFinal[order(summaryFinal$Year, -summaryFinal$TOTVALLANDG),c("Year", "Species", "Landings_Domains", "Discards_Domains", "C_Domains", "D_Domains", "E_Domains", "F_Domains")]
+  
 }
 
 # Produce boxplot of ages

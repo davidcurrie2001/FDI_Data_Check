@@ -52,20 +52,30 @@ myTables <- list(Table_A = read_excel("data/TABLE_A_CATCH.xlsx", col_types = "te
 
 See what ranges of key variables we have in the tables
 
+#Year
 
-```{r Summary}
+
+```{r Summary1}
 
 for (aTable in names(myTables)){
   print(aTable)
   colToCheck <- 'YEAR'
-  print(colToCheck)
+  #print(colToCheck)
   print(ValuesPresentInData(myData=myTables[[aTable]], myColumn=colToCheck))
 }
+
+
+```
+
+### Species
+
+```{r Summary2}
+
 
 for (aTable in names(myTables)){
   print(aTable)
   colToCheck <- 'SPECIES'
-  print(colToCheck)
+  #print(colToCheck)
   print(ValuesPresentInData(myData=myTables[[aTable]], myColumn=colToCheck))
 }
 
@@ -82,27 +92,59 @@ PlotTableA()
 
 ```
 
+### Compare Table A to Tables C, D, E, and F and see if there is anything important missing
 
+```{r TableA1}
+
+kable(CompareTableA(), caption="Domain count comparison for top 10 species by value")
+
+```
 
 ## Table C NAO OFR Discards age data
 
 
-```{r TableCNAO}
+### Boxplot of ages
+
+```{r TableCNAO1}
 
 AgeBoxPlot(Data = myTables[['Table_C_NAO']], PlotTitle="Table C Ages")
 
+
+
+```
+
+### Numbers at age, by year and species (linear scale y axis)
+
+```{r TableCNAO2}
+
 PlotTableC(LogYScale = FALSE)
 
-PlotTableC(LogYScale = TRUE)
 
+```
+
+### Numbers at age, by year and species (log scale y axis)
+
+```{r TableCNAO3}
+
+PlotTableC(LogYScale = TRUE)
 
 ```
 
 ## Table D NAO OFR Discards length data
 
-```{r TableDNAO}
+### Boxplot of lengths
+
+```{r TableDNAO1}
 
 LengthBoxPlot(Data = myTables[['Table_D_NAO']], PlotTitle="Table D Lengths")
+
+
+```
+
+### Numbers at length, by year and species (linear scale y axis)
+
+```{r TableDNAO2}
+
 
 # Too much data to have a single plot so we'll break it down into groups of species
 mySpeciesList <- sort(unique(myTables[['Table_D_NAO']]$SPECIES))
@@ -126,12 +168,23 @@ for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
 
 ```
 
+
 ## Table E NAO OFR Landings age data
 
+### Boxplot of Ages
 
-```{r TableENAO}
+
+```{r TableENAO1}
 
 AgeBoxPlot(Data = myTables[['Table_E_NAO']], PlotTitle="Table E Ages")
+
+
+```
+
+### Numbers at age, by year and species (linear scale y axis)
+
+```{r TableENAO2}
+
 
 # Too much data to have a single plot so we'll break it down into groups of species
 mySpeciesList <- sort(unique(myTables[['Table_E_NAO']]$SPECIES))
@@ -148,6 +201,20 @@ for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
   PlotTableE(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
 }
 
+
+```
+
+### Numbers at age, by year and species (log scale y axis)
+
+```{r TableENAO3}
+
+
+# Too much data to have a single plot so we'll break it down into groups of species
+mySpeciesList <- sort(unique(myTables[['Table_E_NAO']]$SPECIES))
+
+numberInGroup <- 8.0
+
+
 for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
   firstValue <- 1 +   ((i-1)*6) 
   secondValue<- firstValue +5
@@ -159,14 +226,23 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
 
 
 
-
 ```
 
 ## Table F NAO OFR Landings length data
 
-```{r TableFNAO}
+### Boxplot of lengths
+
+```{r TableFNAO1}
 
 LengthBoxPlot(Data = myTables[['Table_F_NAO']], PlotTitle="Table F Lengths")
+
+
+
+```
+
+### Numbers at length, by year and species (linear scale y axis)
+
+```{r TableFNAO2}
 
 # Too much data to have a single plot so we'll break it down into groups of species
 mySpeciesList <- sort(unique(myTables[['Table_F_NAO']]$SPECIES))
@@ -182,6 +258,20 @@ for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
   }
   PlotTableF(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
 }
+
+
+```
+
+### Numbers at length, by year and species (log scale y axis)
+
+```{r TableFNAO3}
+
+
+# Too much data to have a single plot so we'll break it down into groups of species
+mySpeciesList <- sort(unique(myTables[['Table_F_NAO']]$SPECIES))
+
+numberInGroup <- 8.0
+
 
 for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
   firstValue <- 1 +   ((i-1)*6) 
