@@ -427,3 +427,151 @@ PlotTableF <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
   PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_F_NAO']], PlotTitle = "Table F Landings by length" )
 }
 
+PlotTableG <- function(){
+  
+  DataToCheck <- myTables[['Table_G']]
+  
+  # IMPORTANT! Remove the BSA rows first so we're not double counting
+  DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
+  
+  # Change NK in to 0 so we can aggregate - (not really correct thing to do 
+  # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
+  DataToCheck[DataToCheck$TOTSEADAYS=='NK',c("TOTSEADAYS")] <- 0
+  DataToCheck[DataToCheck$TOTFISHDAYS=='NK',c("TOTFISHDAYS")] <- 0
+  DataToCheck[DataToCheck$TOTVES=='NK',c("TOTVES")] <- 0
+  
+  # Change columns to numeric
+  DataToCheck$TOTSEADAYS <- as.numeric(DataToCheck$TOTSEADAYS)
+  DataToCheck$TOTFISHDAYS <- as.numeric(DataToCheck$TOTFISHDAYS)
+  DataToCheck$TOTVES <- as.numeric(DataToCheck$TOTVES)
+  
+  # Aggregate by year and vessel length
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTSEADAYS","TOTFISHDAYS","TOTVES")], by=list(DataToCheck$YEAR , DataToCheck$VESSEL_LENGTH), FUN=sum)
+
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "VesselLengthGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  p <- ggplot(DataToPlot, aes(x=VesselLengthGroup, y = value, color = Type, shape = YearGroup)) + 
+    geom_point(aes(y = TOTSEADAYS, col = "Sea Days")) + 
+    geom_point(aes(y = TOTFISHDAYS, col = "Fishing Days")) +
+    labs(title="Sea/Fishing days by vessel length", x="Vessel length", y="Days")
+  print(p)
+  
+
+  # Aggregate by year and fishing tech
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTSEADAYS","TOTFISHDAYS","TOTVES")], by=list(DataToCheck$YEAR , DataToCheck$FISHING_TECH), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "FishingTechGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  p <- ggplot(DataToPlot, aes(x=FishingTechGroup, y = value, color = Type, shape = YearGroup)) + 
+    geom_point(aes(y = TOTSEADAYS, col = "Sea Days")) + 
+    geom_point(aes(y = TOTFISHDAYS, col = "Fishing Days")) +
+    labs(title="Sea/Fishing days by fishing tech", x="Fishing Tech", y="Days")
+  
+  print(p)
+  
+  # Aggregate by year and gear
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTSEADAYS","TOTFISHDAYS","TOTVES")], by=list(DataToCheck$YEAR , DataToCheck$GEAR_TYPE), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "GearGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  p <- ggplot(DataToPlot, aes(x=GearGroup, y = value, color = Type, shape = YearGroup)) + 
+    geom_point(aes(y = TOTSEADAYS, col = "Sea Days")) + 
+    geom_point(aes(y = TOTFISHDAYS, col = "Fishing Days")) +
+    labs(title="Sea/Fishing days by gear", x="Gear", y="Days") +
+    theme(axis.text.x = element_text(angle = 90))
+  
+  print(p)
+  
+  # Aggregate by year and area
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTSEADAYS","TOTFISHDAYS","TOTVES")], by=list(DataToCheck$YEAR , DataToCheck$SUB_REGION), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "AreaGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  p <- ggplot(DataToPlot, aes(x=AreaGroup, y = value, color = Type, shape = YearGroup)) + 
+    geom_point(aes(y = TOTSEADAYS, col = "Sea Days")) + 
+    geom_point(aes(y = TOTFISHDAYS, col = "Fishing Days")) +
+    labs(title="Sea/Fishing days by area", x="Area", y="Days") +
+    theme(axis.text.x = element_text(angle = 90))
+  
+  print(p)
+  
+  
+}
+
+plotTableH <- function(){
+  
+  DataToCheck <- myTables[['Table_H']]
+  
+  # IMPORTANT! Remove the BSA rows first so we're not double counting
+  DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
+  
+  # Change NK in TOTVALLANDG to 0 so we can aggregate - (not really correct thing to do 
+  # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
+  DataToCheck[DataToCheck$TOTVALLANDG=='NK',c("TOTVALLANDG")] <- 0
+  
+  # Change columns to numeric
+  DataToCheck$TOTWGHTLANDG <- as.numeric(DataToCheck$TOTWGHTLANDG)
+  DataToCheck$TOTVALLANDG <- as.numeric(DataToCheck$TOTVALLANDG)
+
+  # Aggregate by Year and lat/lon
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG")], by=list(DataToCheck$YEAR , DataToCheck$RECTANGLE_LON, DataToCheck$RECTANGLE_LAT), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "Lon"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.3"] <- "Lat"
+  
+  AggDataToCheck$Lon <- as.numeric(AggDataToCheck$Lon)
+  AggDataToCheck$Lat <- as.numeric(AggDataToCheck$Lat)
+  
+
+  p<- getMap(Year=2015, DataToPlot=AggDataToCheck)
+  print(p)
+  
+  p<- getMap(Year=2016, DataToPlot=AggDataToCheck)
+  print(p)
+  
+  p<- getMap(Year=2017, DataToPlot=AggDataToCheck)
+  print(p)
+  
+  p<- getMap(Year=2018, DataToPlot=AggDataToCheck)
+  print(p)
+  
+}
+
+getMap <- function(Year = NULL, DataToPlot = NULL){
+  
+  # https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html
+  
+  world <- ne_countries(scale = "medium", returnclass = "sf")
+  
+  minLon <- min(DataToPlot$Lon, na.rm = T)
+  maxLon <- max(DataToPlot$Lon, na.rm = T)
+  
+  minLat <- min(DataToPlot$Lat, na.rm = T)
+  maxLat <- max(DataToPlot$Lat, na.rm = T)
+  
+  p <- ggplot(data = world) +
+    geom_sf() +
+    ggtitle( paste(Year,"Landings Live Weight (T)")) +
+    geom_point(data = DataToPlot[DataToPlot$YearGroup==Year,], aes(x = Lon, y = Lat, size=TOTWGHTLANDG)) +
+    coord_sf(xlim = c(minLon,maxLon ), ylim = c(minLat, maxLat), expand = TRUE)
+  
+}
+

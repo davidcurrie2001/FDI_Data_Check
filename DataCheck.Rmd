@@ -9,6 +9,9 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readxl)
 library(ggplot2)
 library(knitr)
+library(rworldmap)
+library(rnaturalearth)
+library(rnaturalearthdata)
 
 source("Functions.R")
 
@@ -52,7 +55,7 @@ myTables <- list(Table_A = read_excel("data/TABLE_A_CATCH.xlsx", col_types = "te
 
 See what ranges of key variables we have in the tables
 
-#Year
+### Year
 
 
 ```{r Summary1}
@@ -284,5 +287,20 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
 
 ```
 
+## Table G
 
+```{r TableG1}
 
+PlotTableG()
+
+```
+
+## Table H
+
+Show the geographic range of all landings by year
+
+```{r TableH1}
+
+plotTableH()
+
+```
