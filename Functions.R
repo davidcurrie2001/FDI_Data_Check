@@ -25,8 +25,6 @@ ValuesPresentInData <- function(myData,myColumn){
 # Function to produce some summary plots of Table A for sanity checking
 PlotTableA<-function(DataToCheck = NULL){
 
-  #DataToCheck <- myTables[['Table_A']]
-  
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
 
@@ -155,8 +153,6 @@ PlotTableA<-function(DataToCheck = NULL){
 ## Compare Table A, with Tables C, D, E, and F and see if there are any important gaps
 CompareTableA<-function(DataToCheck = NULL){
   
-  
-  #DataToCheck <- myTables[['Table_A']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
@@ -406,30 +402,8 @@ PlotNoAtLength <- function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTi
 }
 
 
-# PlotTableC <-function(DataToCheck = NULL, LogYScale = FALSE, SpeciesToPlot = NULL){
-#   
-#   PlotNoAtAge(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_C_NAO']], PlotTitle = "Table C Discards by age" )
-# }
-# 
-# PlotTableD <-function(DataToCheck = NULL, LogYScale = FALSE, SpeciesToPlot = NULL){
-#   
-#   PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_D_NAO']], PlotTitle = "Table D Discards by length" )
-# }
-# 
-# PlotTableE <-function(DataToCheck = NULL, LogYScale = FALSE, SpeciesToPlot = NULL){
-#   
-#   PlotNoAtAge(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_E_NAO']], PlotTitle = "Table E Landings by age" )
-# }
-# 
-# 
-# PlotTableF <-function(DataToCheck = NULL, LogYScale = FALSE, SpeciesToPlot = NULL){
-#   
-#   PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_F_NAO']], PlotTitle = "Table F Landings by length" )
-# }
-
+# Summarise Effort data
 PlotTableG <- function(DataToCheck = NULL){
-  
-  #DataToCheck <- myTables[['Table_G']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
@@ -514,9 +488,8 @@ PlotTableG <- function(DataToCheck = NULL){
   
 }
 
+# Produces maps of landings data
 plotTableH <- function(DataToCheck = NULL){
-  
-  #DataToCheck <- myTables[['Table_H']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
@@ -559,9 +532,9 @@ plotTableH <- function(DataToCheck = NULL){
   
 }
 
+# Utility function to create maps
+# https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html
 getMap <- function(Year = NULL, DataToPlot = NULL, VariableToPlot = NULL, ChartTitle = NULL){
-  
-  # https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html
   
   world <- ne_countries(scale = "medium", returnclass = "sf")
   
@@ -571,13 +544,6 @@ getMap <- function(Year = NULL, DataToPlot = NULL, VariableToPlot = NULL, ChartT
   minLat <- min(DataToPlot$Lat, na.rm = T)
   maxLat <- max(DataToPlot$Lat, na.rm = T)
   
-  #p <- ggplot(data = world) +
-  #  geom_sf() +
-  #  ggtitle( paste(Year,"Landings Live Weight (T)")) +
-  #  geom_point(data = DataToPlot[DataToPlot$YearGroup==Year,], aes(x = Lon, y = Lat, size=TOTWGHTLANDG)) +
-  #  coord_sf(xlim = c(minLon,maxLon ), ylim = c(minLat, maxLat), expand = TRUE)
-  
-  
   # Note use aes-string instead of aes to pass in the names of the variables rather than the actual objects
   p <- ggplot(data = world) +
     geom_sf() +
@@ -585,17 +551,14 @@ getMap <- function(Year = NULL, DataToPlot = NULL, VariableToPlot = NULL, ChartT
     geom_point(data = DataToPlot[DataToPlot$YearGroup==Year,], aes_string(x = "Lon", y = "Lat", size=VariableToPlot)) +
     coord_sf(xlim = c(minLon,maxLon ), ylim = c(minLat, maxLat), expand = TRUE)
   
-  
 }
 
+# Produces maps of effort data
 plotTableI <- function(DataToCheck = NULL){
-  
-  #DataToCheck <- myTables[['Table_I']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
   
-
   # Change columns to numeric
   DataToCheck$TOTFISHDAYS <- as.numeric(DataToCheck$TOTFISHDAYS)
 
@@ -626,10 +589,9 @@ plotTableI <- function(DataToCheck = NULL){
   
 }
 
+# Summarise Tabel J
 plotTableJ <- function(DataToCheck = NULL){
   
-  #DataToCheck <- myTables[['Table_J']]
-
   # Change NK to 0 so we can aggregate - (not really correct thing to do 
   # but otherwise we can't aggrgeate for columns that have some values and some NKs)
   DataToCheck[DataToCheck$TOTTRIPS=='NK',c("TOTTRIPS")] <- 0

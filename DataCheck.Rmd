@@ -19,7 +19,7 @@ source("Functions.R")
 
 ## Introduction
 
-This project carries out some checks on data that is formatted for the FDI data call  - it does not perform the validation checks that are already performed by the FDI Data Upload portal but instead tries to look at the data and present plots etc to help the user decide whether the information content is correct.
+This project carries out some checks on data that is formatted for the FDI data call  - it does not perform the validation checks that are already performed by the FDI Data Upload portal but instead tries to look at the data and present plots etc to help the user decide whether the information content is correct.  The code to create this file is available on GitHub [davidcurrie2001/FDI_Data_Check](https://github.com/davidcurrie2001/FDI_Data_Check)  
 
 ## Load the data
 
