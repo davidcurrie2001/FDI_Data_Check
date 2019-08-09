@@ -23,9 +23,9 @@ ValuesPresentInData <- function(myData,myColumn){
 }
 
 # Function to produce some summary plots of Table A for sanity checking
-PlotTableA<-function(){
+PlotTableA<-function(DataToCheck = NULL){
 
-  DataToCheck <- myTables[['Table_A']]
+  #DataToCheck <- myTables[['Table_A']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
@@ -153,10 +153,10 @@ PlotTableA<-function(){
 }
 
 ## Compare Table A, with Tables C, D, E, and F and see if there are any important gaps
-CompareTableA<-function(){
+CompareTableA<-function(DataToCheck = NULL){
   
   
-  DataToCheck <- myTables[['Table_A']]
+  #DataToCheck <- myTables[['Table_A']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
@@ -406,30 +406,30 @@ PlotNoAtLength <- function(LogYScale = FALSE, SpeciesToPlot = NULL, Data, PlotTi
 }
 
 
-PlotTableC <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
-  
-  PlotNoAtAge(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_C_NAO']], PlotTitle = "Table C Discards by age" )
-}
+# PlotTableC <-function(DataToCheck = NULL, LogYScale = FALSE, SpeciesToPlot = NULL){
+#   
+#   PlotNoAtAge(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_C_NAO']], PlotTitle = "Table C Discards by age" )
+# }
+# 
+# PlotTableD <-function(DataToCheck = NULL, LogYScale = FALSE, SpeciesToPlot = NULL){
+#   
+#   PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_D_NAO']], PlotTitle = "Table D Discards by length" )
+# }
+# 
+# PlotTableE <-function(DataToCheck = NULL, LogYScale = FALSE, SpeciesToPlot = NULL){
+#   
+#   PlotNoAtAge(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_E_NAO']], PlotTitle = "Table E Landings by age" )
+# }
+# 
+# 
+# PlotTableF <-function(DataToCheck = NULL, LogYScale = FALSE, SpeciesToPlot = NULL){
+#   
+#   PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_F_NAO']], PlotTitle = "Table F Landings by length" )
+# }
 
-PlotTableD <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
+PlotTableG <- function(DataToCheck = NULL){
   
-  PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_D_NAO']], PlotTitle = "Table D Discards by length" )
-}
-
-PlotTableE <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
-  
-  PlotNoAtAge(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_E_NAO']], PlotTitle = "Table E Landings by age" )
-}
-
-
-PlotTableF <-function(LogYScale = FALSE, SpeciesToPlot = NULL){
-  
-  PlotNoAtLength(LogYScale = LogYScale,SpeciesToPlot = SpeciesToPlot, Data = myTables[['Table_F_NAO']], PlotTitle = "Table F Landings by length" )
-}
-
-PlotTableG <- function(){
-  
-  DataToCheck <- myTables[['Table_G']]
+  #DataToCheck <- myTables[['Table_G']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
@@ -514,9 +514,9 @@ PlotTableG <- function(){
   
 }
 
-plotTableH <- function(){
+plotTableH <- function(DataToCheck = NULL){
   
-  DataToCheck <- myTables[['Table_H']]
+  #DataToCheck <- myTables[['Table_H']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
@@ -588,9 +588,9 @@ getMap <- function(Year = NULL, DataToPlot = NULL, VariableToPlot = NULL, ChartT
   
 }
 
-plotTableI <- function(){
+plotTableI <- function(DataToCheck = NULL){
   
-  DataToCheck <- myTables[['Table_I']]
+  #DataToCheck <- myTables[['Table_I']]
   
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
@@ -624,7 +624,51 @@ plotTableI <- function(){
   p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
   print(p)
   
+}
 
+plotTableJ <- function(DataToCheck = NULL){
+  
+  #DataToCheck <- myTables[['Table_J']]
+
+  # Change NK to 0 so we can aggregate - (not really correct thing to do 
+  # but otherwise we can't aggrgeate for columns that have some values and some NKs)
+  DataToCheck[DataToCheck$TOTTRIPS=='NK',c("TOTTRIPS")] <- 0
+
+  # Change columns to numeric
+  DataToCheck$TOTTRIPS <- as.numeric(DataToCheck$TOTTRIPS)
+
+  # Aggregate by Year and length
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTTRIPS")], by=list(DataToCheck$YEAR , DataToCheck$VESSEL_LENGTH), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "VesselLengthGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  # Plot the data
+  p <- ggplot(DataToPlot, aes(x=VesselLengthGroup, y=TOTTRIPS, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Number of trips by vessel length", x="Vessel Length", y="Number")
+  print(p)
+  
+  # Aggregate by Year and fishing tech
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTTRIPS")], by=list(DataToCheck$YEAR , DataToCheck$FISHING_TECH), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "FishingTechGroup"
+  
+  DataToPlot <- AggDataToCheck
+  
+  # Plot the data
+  p <- ggplot(DataToPlot, aes(x=FishingTechGroup, y=TOTTRIPS, shape = YearGroup)) +
+    geom_point() +
+    labs(title="Number of trips by fishing tech (log scale y axis)", x="Fishing tech", y="Number") +
+    scale_y_log10()
+  print(p)
+
+  
   
 }
 

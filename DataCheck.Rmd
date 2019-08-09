@@ -90,7 +90,7 @@ for (aTable in names(myTables)){
 
 ```{r TableA}
 
-PlotTableA()
+PlotTableA(DataToCheck = myTables[['Table_A']])
 
 
 ```
@@ -99,7 +99,7 @@ PlotTableA()
 
 ```{r TableA1}
 
-kable(CompareTableA(), caption="Domain count comparison for top 10 species by value")
+kable(CompareTableA(DataToCheck = myTables[['Table_A']]), caption="Domain count comparison for top 10 species by value")
 
 ```
 
@@ -120,7 +120,8 @@ AgeBoxPlot(Data = myTables[['Table_C_NAO']], PlotTitle="Table C Ages")
 
 ```{r TableCNAO2}
 
-PlotTableC(LogYScale = FALSE)
+#PlotTableC(LogYScale = FALSE)
+PlotNoAtAge(LogYScale = FALSE,SpeciesToPlot = NULL, Data = myTables[['Table_C_NAO']], PlotTitle = "Table C Discards by age" )
 
 
 ```
@@ -129,7 +130,8 @@ PlotTableC(LogYScale = FALSE)
 
 ```{r TableCNAO3}
 
-PlotTableC(LogYScale = TRUE)
+#PlotTableC(LogYScale = TRUE)
+PlotNoAtAge(LogYScale = TRUE,SpeciesToPlot = NULL, Data = myTables[['Table_C_NAO']], PlotTitle = "Table C Discards by age" )
 
 ```
 
@@ -163,7 +165,8 @@ for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
     secondValue <- NROW(mySpeciesList)
   }
   
-  PlotTableD(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  #PlotTableD(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  PlotNoAtLength(LogYScale = FALSE,SpeciesToPlot = mySpeciesList[firstValue:secondValue], Data = myTables[['Table_D_NAO']], PlotTitle = "Table D Discards by length" )
   
 }
 
@@ -201,7 +204,8 @@ for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
   if (secondValue > NROW(mySpeciesList)){
     secondValue <- NROW(mySpeciesList)
   }
-  PlotTableE(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  #PlotTableE(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  PlotNoAtAge(LogYScale = FALSE,SpeciesToPlot = mySpeciesList[firstValue:secondValue], Data = myTables[['Table_E_NAO']], PlotTitle = "Table E Landings by age" )
 }
 
 
@@ -224,7 +228,8 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
   if (secondValue > NROW(mySpeciesList)){
     secondValue <- NROW(mySpeciesList)
   }
-  PlotTableE(LogYScale = TRUE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  #PlotTableE(LogYScale = TRUE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  PlotNoAtAge(LogYScale = TRUE,SpeciesToPlot = mySpeciesList[firstValue:secondValue], Data = myTables[['Table_E_NAO']], PlotTitle = "Table E Landings by age" )
 }
 
 
@@ -259,7 +264,8 @@ for(i in 1:ceiling(NROW(mySpeciesList)/numberInGroup)){
   if (secondValue > NROW(mySpeciesList)){
     secondValue <- NROW(mySpeciesList)
   }
-  PlotTableF(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  #PlotTableF(LogYScale = FALSE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  PlotNoAtLength(LogYScale = FALSE,SpeciesToPlot = mySpeciesList[firstValue:secondValue], Data = myTables[['Table_F_NAO']], PlotTitle = "Table F Landings by length" )
 }
 
 
@@ -282,7 +288,8 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
   if (secondValue > NROW(mySpeciesList)){
     secondValue <- NROW(mySpeciesList)
   }
-  PlotTableF(LogYScale = TRUE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  #PlotTableF(LogYScale = TRUE, SpeciesToPlot = mySpeciesList[firstValue:secondValue])
+  PlotNoAtLength(LogYScale = TRUE,SpeciesToPlot = mySpeciesList[firstValue:secondValue], Data = myTables[['Table_F_NAO']], PlotTitle = "Table F Landings by length" )
 }
 
 ```
@@ -291,7 +298,7 @@ for(i in 1:ceiling(NROW(mySpeciesList)/6.0)){
 
 ```{r TableG1}
 
-PlotTableG()
+PlotTableG(DataToCheck = myTables[['Table_G']])
 
 ```
 
@@ -301,7 +308,7 @@ Show the geographic range of landings by year
 
 ```{r TableH1}
 
-plotTableH()
+plotTableH(DataToCheck = myTables[['Table_H']])
 
 ```
 
@@ -311,12 +318,17 @@ Show the geographic range of effort by year
 
 ```{r TableI1}
 
-plotTableI()
+plotTableI(DataToCheck = myTables[['Table_I']])
 
 ```
 
 
 
-## Table J
+## Table J Capacity
 
+```{r TableJ1}
+
+plotTableJ(DataToCheck = myTables[['Table_J']])
+
+```
 
