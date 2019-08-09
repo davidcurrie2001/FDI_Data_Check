@@ -541,21 +541,25 @@ plotTableH <- function(){
   AggDataToCheck$Lat <- as.numeric(AggDataToCheck$Lat)
   
 
-  p<- getMap(Year=2015, DataToPlot=AggDataToCheck)
+  #p<- getMap(Year=2015, DataToPlot=AggDataToCheck)
+  p<- getMap(Year=2015, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
   print(p)
   
-  p<- getMap(Year=2016, DataToPlot=AggDataToCheck)
+  #p<- getMap(Year=2016, DataToPlot=AggDataToCheck)
+  p<- getMap(Year=2016, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
   print(p)
   
-  p<- getMap(Year=2017, DataToPlot=AggDataToCheck)
+  #p<- getMap(Year=2017, DataToPlot=AggDataToCheck)
+  p<- getMap(Year=2017, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
   print(p)
   
-  p<- getMap(Year=2018, DataToPlot=AggDataToCheck)
+  #p<- getMap(Year=2018, DataToPlot=AggDataToCheck)
+  p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
   print(p)
   
 }
 
-getMap <- function(Year = NULL, DataToPlot = NULL){
+getMap <- function(Year = NULL, DataToPlot = NULL, VariableToPlot = NULL, ChartTitle = NULL){
   
   # https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html
   
@@ -567,11 +571,60 @@ getMap <- function(Year = NULL, DataToPlot = NULL){
   minLat <- min(DataToPlot$Lat, na.rm = T)
   maxLat <- max(DataToPlot$Lat, na.rm = T)
   
+  #p <- ggplot(data = world) +
+  #  geom_sf() +
+  #  ggtitle( paste(Year,"Landings Live Weight (T)")) +
+  #  geom_point(data = DataToPlot[DataToPlot$YearGroup==Year,], aes(x = Lon, y = Lat, size=TOTWGHTLANDG)) +
+  #  coord_sf(xlim = c(minLon,maxLon ), ylim = c(minLat, maxLat), expand = TRUE)
+  
+  
+  # Note use aes-string instead of aes to pass in the names of the variables rather than the actual objects
   p <- ggplot(data = world) +
     geom_sf() +
-    ggtitle( paste(Year,"Landings Live Weight (T)")) +
-    geom_point(data = DataToPlot[DataToPlot$YearGroup==Year,], aes(x = Lon, y = Lat, size=TOTWGHTLANDG)) +
+    ggtitle( paste(Year,ChartTitle)) +
+    geom_point(data = DataToPlot[DataToPlot$YearGroup==Year,], aes_string(x = "Lon", y = "Lat", size=VariableToPlot)) +
     coord_sf(xlim = c(minLon,maxLon ), ylim = c(minLat, maxLat), expand = TRUE)
+  
+  
+}
+
+plotTableI <- function(){
+  
+  DataToCheck <- myTables[['Table_I']]
+  
+  # IMPORTANT! Remove the BSA rows first so we're not double counting
+  DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
+  
+
+  # Change columns to numeric
+  DataToCheck$TOTFISHDAYS <- as.numeric(DataToCheck$TOTFISHDAYS)
+
+  
+  # Aggregate by Year and lat/lon
+  AggDataToCheck <- aggregate(DataToCheck[,c("TOTFISHDAYS")], by=list(DataToCheck$YEAR , DataToCheck$RECTANGLE_LON, DataToCheck$RECTANGLE_LAT), FUN=sum)
+  
+  # Rename the columns produced by the aggregate function
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "Lon"
+  names(AggDataToCheck)[names(AggDataToCheck)=="Group.3"] <- "Lat"
+  
+  AggDataToCheck$Lon <- as.numeric(AggDataToCheck$Lon)
+  AggDataToCheck$Lat <- as.numeric(AggDataToCheck$Lat)
+  
+  
+  p<- getMap(Year=2015, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+  print(p)
+  
+  p<- getMap(Year=2016, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+  print(p)
+  
+  p<- getMap(Year=2017, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+  print(p)
+  
+  p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+  print(p)
+  
+
   
 }
 
