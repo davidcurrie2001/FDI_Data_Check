@@ -44,6 +44,7 @@ myTables <- list(Table_A = read_excel("data/TABLE_A_CATCH.xlsx", col_types = "te
                  ,Table_H  =  read_excel("data/TABLE_H_LANDINGS_BY_RECTANGLE.xlsx", col_types = "text")
                  ,Table_I  =  read_excel("data/TABLE_I_EFFORT_BY_RECTANGLE.xlsx", col_types = "text")
                  ,Table_J  =  read_excel("data/TABLE_J_CAPACITY.xlsx", col_types = "text")
+                 ,Table_K  = read_excel("data/TABLE_K_NAO_OFR_DISCARDS.xlsx", col_types = "text")
 )
                    
                    
