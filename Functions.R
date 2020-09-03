@@ -537,22 +537,26 @@ plotTableH <- function(DataToCheck = NULL){
     AggDataToCheck$Lon <- as.numeric(AggDataToCheck$Lon)
     AggDataToCheck$Lat <- as.numeric(AggDataToCheck$Lat)
     
-  
-    #p<- getMap(Year=2015, DataToPlot=AggDataToCheck)
-    p<- getMap(Year=2015, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
-    print(p)
+    for (myYear in sort(unique(AggDataToCheck$YearGroup))){
+      p<- getMap(Year=myYear, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
+      print(p)
+    }
     
-    #p<- getMap(Year=2016, DataToPlot=AggDataToCheck)
-    p<- getMap(Year=2016, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
-    print(p)
-    
-    #p<- getMap(Year=2017, DataToPlot=AggDataToCheck)
-    p<- getMap(Year=2017, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
-    print(p)
-    
-    #p<- getMap(Year=2018, DataToPlot=AggDataToCheck)
-    p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
-    print(p)
+    # #p<- getMap(Year=2015, DataToPlot=AggDataToCheck)
+    # p<- getMap(Year=2015, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
+    # print(p)
+    # 
+    # #p<- getMap(Year=2016, DataToPlot=AggDataToCheck)
+    # p<- getMap(Year=2016, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
+    # print(p)
+    # 
+    # #p<- getMap(Year=2017, DataToPlot=AggDataToCheck)
+    # p<- getMap(Year=2017, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
+    # print(p)
+    # 
+    # #p<- getMap(Year=2018, DataToPlot=AggDataToCheck)
+    # p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
+    # print(p)
   
   } else {
     print("No data to plot")
@@ -604,18 +608,22 @@ plotTableI <- function(DataToCheck = NULL){
     AggDataToCheck$Lon <- as.numeric(AggDataToCheck$Lon)
     AggDataToCheck$Lat <- as.numeric(AggDataToCheck$Lat)
     
+    for (myYear in sort(unique(AggDataToCheck$YearGroup))){
+      p<- getMap(Year=myYear, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+      print(p)
+    }
     
-    p<- getMap(Year=2015, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
-    print(p)
-    
-    p<- getMap(Year=2016, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
-    print(p)
-    
-    p<- getMap(Year=2017, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
-    print(p)
-    
-    p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
-    print(p)
+    # p<- getMap(Year=2015, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+    # print(p)
+    # 
+    # p<- getMap(Year=2016, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+    # print(p)
+    # 
+    # p<- getMap(Year=2017, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+    # print(p)
+    # 
+    # p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+    # print(p)
     
   } else {
     print("No data to plot")
