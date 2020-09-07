@@ -25,14 +25,16 @@ ValuesPresentInData <- function(myData,myColumn){
 # Function to produce some summary plots of Table A for sanity checking
 PlotTableA<-function(DataToCheck = NULL){
 
+
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
 
   #DataToCheck <- DataToCheck[,c("YEAR","SPECIES", "TOTWGHTLANDG","TOTVALLANDG","DISCARDS")]
   
-  # Change NK in Discards to 0 so we can aggregate - (not really correct thing to do 
-  # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
+  # Change NK in Discards and TOTVALLANDG to 0 so we can aggregate - (not really correct thing to do 
+  # but otherwise we can't aggrgeate for species that have some values and some NKs)
   DataToCheck[DataToCheck$DISCARDS=='NK',c("DISCARDS")] <- 0
+  DataToCheck[DataToCheck$TOTVALLANDG=='NK',c("TOTVALLANDG")] <- 0
   
   # Change columns to numeric
   DataToCheck$TOTWGHTLANDG <- as.numeric(DataToCheck$TOTWGHTLANDG)
