@@ -33,8 +33,8 @@ PlotTableA<-function(DataToCheck = NULL){
   
   # Change NK in Discards and TOTVALLANDG to 0 so we can aggregate - (not really correct thing to do 
   # but otherwise we can't aggrgeate for species that have some values and some NKs)
-  DataToCheck[DataToCheck$DISCARDS=='NK',c("DISCARDS")] <- 0
-  DataToCheck[DataToCheck$TOTVALLANDG=='NK',c("TOTVALLANDG")] <- 0
+  DataToCheck[DataToCheck$DISCARDS=='NK',c("DISCARDS")] <- '0'
+  DataToCheck[DataToCheck$TOTVALLANDG=='NK',c("TOTVALLANDG")] <- '0'
   
   # Change columns to numeric
   DataToCheck$TOTWGHTLANDG <- as.numeric(DataToCheck$TOTWGHTLANDG)
@@ -70,18 +70,21 @@ PlotTableA<-function(DataToCheck = NULL){
   # Plot the data
   DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByWeight$SpeciesGroup ,]
   p <- ggplot(DataToPlot, aes(x=reorder(SpeciesGroup,-TOTWGHTLANDG) , y=TOTWGHTLANDG, shape = YearGroup)) +
+    scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
     geom_point() +
-    labs(title="Table A Top 10 Species by Landings", x="Species", y="Landings Live Weight (T)") 
+    labs(title="Table A Top 10 Species by Landings", x="Species", y="Landings Live Weight (T)")
   print(p)
   
   DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByValue$SpeciesGroup ,]
   p <- ggplot(DataToPlot, aes(x=reorder(SpeciesGroup,-TOTVALLANDG), y=TOTVALLANDG, shape = YearGroup)) +
+    scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
     geom_point() +
     labs(title="Table A Top 10 Species by Value", x="Species", y="Landings Value (Euro)") 
   print(p)
   
   DataToPlot <- AggDataToCheck[AggDataToCheck$SpeciesGroup %in% Top10ByDiscards$SpeciesGroup ,]
   p <- ggplot(DataToPlot, aes(x=reorder(SpeciesGroup,-DISCARDS), y=DISCARDS, shape = YearGroup)) +
+    scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
     geom_point() +
     labs(title="Table A Top 10 Species by Discards", x="Species", y="Discards (T)") 
   print(p)
@@ -97,6 +100,7 @@ PlotTableA<-function(DataToCheck = NULL){
   
   # Plot the data
   p <- ggplot(DataToPlot, aes(x=VesselLengthGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
     geom_point() +
     labs(title="Landings by Vessel Length", x="Vessel Length", y="Landings Live Weight (T)") 
   print(p)
@@ -112,6 +116,7 @@ PlotTableA<-function(DataToCheck = NULL){
   
   # Plot the data
   p <- ggplot(DataToPlot, aes(x=FishingTechGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
     geom_point() +
     labs(title="Landings by fishing tech", x="Fishing Tech", y="Landings Live Weight (T)") 
   print(p)
@@ -127,6 +132,7 @@ PlotTableA<-function(DataToCheck = NULL){
   
   # Plot the data
   p <- ggplot(DataToPlot, aes(x=GearGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
     geom_point() +
     labs(title="Landings by gear", x="Fishing Gear", y="Landings Live Weight (T)")  +
     theme(axis.text.x = element_text(angle = 90))
@@ -143,6 +149,7 @@ PlotTableA<-function(DataToCheck = NULL){
   
   # Plot the data
   p <- ggplot(DataToPlot, aes(x=AreaGroup, y=TOTWGHTLANDG, shape = YearGroup)) +
+    scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
     geom_point() +
     labs(title="Landings by area", x="Area", y="Landings Live Weight (T)")  +
     theme(axis.text.x = element_text(angle = 90))
@@ -162,7 +169,7 @@ CompareTableA<-function(DataToCheck = NULL){
 
   # Change NK in Discards to 0 so we can aggregate - (not really correct thing to do 
   # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
-  DataToCheck[DataToCheck$DISCARDS=='NK',c("DISCARDS")] <- 0
+  DataToCheck[DataToCheck$DISCARDS=='NK',c("DISCARDS")] <- '0'
   
   # Change columns to numeric
   DataToCheck$TOTWGHTLANDG <- as.numeric(DataToCheck$TOTWGHTLANDG)
@@ -431,9 +438,9 @@ PlotTableG <- function(DataToCheck = NULL){
   
     # Change NK in to 0 so we can aggregate - (not really correct thing to do 
     # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
-    DataToCheck[DataToCheck$TOTSEADAYS=='NK',c("TOTSEADAYS")] <- 0
-    DataToCheck[DataToCheck$TOTFISHDAYS=='NK',c("TOTFISHDAYS")] <- 0
-    DataToCheck[DataToCheck$TOTVES=='NK',c("TOTVES")] <- 0
+    DataToCheck[DataToCheck$TOTSEADAYS=='NK',c("TOTSEADAYS")] <- '0'
+    DataToCheck[DataToCheck$TOTFISHDAYS=='NK',c("TOTFISHDAYS")] <- '0'
+    DataToCheck[DataToCheck$TOTVES=='NK',c("TOTVES")] <- '0'
     
     # Change columns to numeric
     DataToCheck$TOTSEADAYS <- as.numeric(DataToCheck$TOTSEADAYS)
@@ -449,7 +456,8 @@ PlotTableG <- function(DataToCheck = NULL){
     
     DataToPlot <- AggDataToCheck
     
-    p <- ggplot(DataToPlot, aes(x=VesselLengthGroup, y = value, color = Type, shape = YearGroup)) + 
+    p <- ggplot(DataToPlot, aes(x=VesselLengthGroup, y = value, color = Type, shape = YearGroup)) +
+      scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
       geom_point(aes(y = TOTSEADAYS, col = "Sea Days")) + 
       geom_point(aes(y = TOTFISHDAYS, col = "Fishing Days")) +
       labs(title="Sea/Fishing days by vessel length", x="Vessel length", y="Days")
@@ -466,6 +474,7 @@ PlotTableG <- function(DataToCheck = NULL){
     DataToPlot <- AggDataToCheck
     
     p <- ggplot(DataToPlot, aes(x=FishingTechGroup, y = value, color = Type, shape = YearGroup)) + 
+      scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
       geom_point(aes(y = TOTSEADAYS, col = "Sea Days")) + 
       geom_point(aes(y = TOTFISHDAYS, col = "Fishing Days")) +
       labs(title="Sea/Fishing days by fishing tech", x="Fishing Tech", y="Days")
@@ -482,6 +491,7 @@ PlotTableG <- function(DataToCheck = NULL){
     DataToPlot <- AggDataToCheck
     
     p <- ggplot(DataToPlot, aes(x=GearGroup, y = value, color = Type, shape = YearGroup)) + 
+      scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
       geom_point(aes(y = TOTSEADAYS, col = "Sea Days")) + 
       geom_point(aes(y = TOTFISHDAYS, col = "Fishing Days")) +
       labs(title="Sea/Fishing days by gear", x="Gear", y="Days") +
@@ -499,6 +509,7 @@ PlotTableG <- function(DataToCheck = NULL){
     DataToPlot <- AggDataToCheck
     
     p <- ggplot(DataToPlot, aes(x=AreaGroup, y = value, color = Type, shape = YearGroup)) + 
+      scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
       geom_point(aes(y = TOTSEADAYS, col = "Sea Days")) + 
       geom_point(aes(y = TOTFISHDAYS, col = "Fishing Days")) +
       labs(title="Sea/Fishing days by area", x="Area", y="Days") +
@@ -639,7 +650,7 @@ plotTableJ <- function(DataToCheck = NULL){
   
     # Change NK to 0 so we can aggregate - (not really correct thing to do 
     # but otherwise we can't aggrgeate for columns that have some values and some NKs)
-    DataToCheck[DataToCheck$TOTTRIPS=='NK',c("TOTTRIPS")] <- 0
+    DataToCheck[DataToCheck$TOTTRIPS=='NK',c("TOTTRIPS")] <- '0'
   
     # Change columns to numeric
     DataToCheck$TOTTRIPS <- as.numeric(DataToCheck$TOTTRIPS)
@@ -655,6 +666,7 @@ plotTableJ <- function(DataToCheck = NULL){
     
     # Plot the data
     p <- ggplot(DataToPlot, aes(x=VesselLengthGroup, y=TOTTRIPS, shape = YearGroup)) +
+      scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
       geom_point() +
       labs(title="Number of trips by vessel length", x="Vessel Length", y="Number")
     print(p)
@@ -670,6 +682,7 @@ plotTableJ <- function(DataToCheck = NULL){
     
     # Plot the data
     p <- ggplot(DataToPlot, aes(x=FishingTechGroup, y=TOTTRIPS, shape = YearGroup)) +
+      scale_shape_manual(values=1:length(unique(DataToPlot$YearGroup))) +
       geom_point() +
       labs(title="Number of trips by fishing tech (log scale y axis)", x="Fishing tech", y="Number") +
       scale_y_log10()
