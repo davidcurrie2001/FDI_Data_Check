@@ -529,47 +529,42 @@ plotTableH <- function(DataToCheck = NULL){
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
   
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "EU","EEZ_INDICATOR"] <- "1) EU"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "UK","EEZ_INDICATOR"] <- "2) UK"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "NA","EEZ_INDICATOR"] <- "3) NA"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "COAST","EEZ_INDICATOR"] <- "4) COAST"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "RFMO","EEZ_INDICATOR"] <- "5) RFMO"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "NK","EEZ_INDICATOR"] <- "6) NK"
+  
   if(nrow(DataToCheck)>0){
   
     # Change NK in TOTVALLANDG to 0 so we can aggregate - (not really correct thing to do 
     # but otherwise we can't aggrgeate for species that have some Discards values and some NKs)
-    DataToCheck[DataToCheck$TOTVALLANDG=='NK',c("TOTVALLANDG")] <- 0
+    DataToCheck[DataToCheck$TOTVALLANDG=='NK',c("TOTVALLANDG")] <- '0'
     
     # Change columns to numeric
     DataToCheck$TOTWGHTLANDG <- as.numeric(DataToCheck$TOTWGHTLANDG)
     DataToCheck$TOTVALLANDG <- as.numeric(DataToCheck$TOTVALLANDG)
   
     # Aggregate by Year and lat/lon
-    AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG")], by=list(DataToCheck$YEAR , DataToCheck$RECTANGLE_LON, DataToCheck$RECTANGLE_LAT), FUN=sum)
+    #AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG")], by=list(DataToCheck$YEAR , DataToCheck$RECTANGLE_LON, DataToCheck$RECTANGLE_LAT), FUN=sum)
+    # Aggregate by Year and lat/lon and EEZ
+    AggDataToCheck <- aggregate(DataToCheck[,c("TOTWGHTLANDG","TOTVALLANDG")], by=list(DataToCheck$YEAR , DataToCheck$RECTANGLE_LON, DataToCheck$RECTANGLE_LAT,DataToCheck$EEZ_INDICATOR), FUN=sum)
     
     # Rename the columns produced by the aggregate function
     names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
     names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "Lon"
     names(AggDataToCheck)[names(AggDataToCheck)=="Group.3"] <- "Lat"
+    names(AggDataToCheck)[names(AggDataToCheck)=="Group.4"] <- "EEZ"
     
     AggDataToCheck$Lon <- as.numeric(AggDataToCheck$Lon)
     AggDataToCheck$Lat <- as.numeric(AggDataToCheck$Lat)
     
     for (myYear in sort(unique(AggDataToCheck$YearGroup))){
-      p<- getMap(Year=myYear, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
+      p<- getMap(Year=myYear, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)", VariableForColour="EEZ")
       print(p)
     }
     
-    # #p<- getMap(Year=2015, DataToPlot=AggDataToCheck)
-    # p<- getMap(Year=2015, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
-    # print(p)
-    # 
-    # #p<- getMap(Year=2016, DataToPlot=AggDataToCheck)
-    # p<- getMap(Year=2016, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
-    # print(p)
-    # 
-    # #p<- getMap(Year=2017, DataToPlot=AggDataToCheck)
-    # p<- getMap(Year=2017, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
-    # print(p)
-    # 
-    # #p<- getMap(Year=2018, DataToPlot=AggDataToCheck)
-    # p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTWGHTLANDG", ChartTitle = "Landings Live Weight (T)")
-    # print(p)
   
   } else {
     print("No data to plot")
@@ -579,7 +574,7 @@ plotTableH <- function(DataToCheck = NULL){
 
 # Utility function to create maps
 # https://www.r-spatial.org/r/2018/10/25/ggplot2-sf.html
-getMap <- function(Year = NULL, DataToPlot = NULL, VariableToPlot = NULL, ChartTitle = NULL){
+getMap <- function(Year = NULL, DataToPlot = NULL, VariableToPlot = NULL, ChartTitle = NULL, VariableForColour = NULL){
   
   world <- ne_countries(scale = "medium", returnclass = "sf")
   
@@ -593,7 +588,7 @@ getMap <- function(Year = NULL, DataToPlot = NULL, VariableToPlot = NULL, ChartT
   p <- ggplot(data = world) +
     geom_sf() +
     ggtitle( paste(Year,ChartTitle)) +
-    geom_point(data = DataToPlot[DataToPlot$YearGroup==Year,], aes_string(x = "Lon", y = "Lat", size=VariableToPlot)) +
+    geom_point(data = DataToPlot[DataToPlot$YearGroup==Year,], aes_string(x = "Lon", y = "Lat", size=VariableToPlot, color = VariableForColour)) +
     coord_sf(xlim = c(minLon,maxLon ), ylim = c(minLat, maxLat), expand = TRUE)
   
 }
@@ -604,39 +599,37 @@ plotTableI <- function(DataToCheck = NULL){
   # IMPORTANT! Remove the BSA rows first so we're not double counting
   DataToCheck <- DataToCheck[DataToCheck$SUB_REGION!='BSA',]
   
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "EU","EEZ_INDICATOR"] <- "1) EU"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "UK","EEZ_INDICATOR"] <- "2) UK"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "NA","EEZ_INDICATOR"] <- "3) NA"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "COAST","EEZ_INDICATOR"] <- "4) COAST"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "RFMO","EEZ_INDICATOR"] <- "5) RFMO"
+  DataToCheck[DataToCheck$EEZ_INDICATOR == "NK","EEZ_INDICATOR"] <- "6) NK"
+  
   if(nrow(DataToCheck)>0){
   
     # Change columns to numeric
     DataToCheck$TOTFISHDAYS <- as.numeric(DataToCheck$TOTFISHDAYS)
   
-    
     # Aggregate by Year and lat/lon
-    AggDataToCheck <- aggregate(DataToCheck[,c("TOTFISHDAYS")], by=list(DataToCheck$YEAR , DataToCheck$RECTANGLE_LON, DataToCheck$RECTANGLE_LAT), FUN=sum)
+    #AggDataToCheck <- aggregate(DataToCheck[,c("TOTFISHDAYS")], by=list(DataToCheck$YEAR , DataToCheck$RECTANGLE_LON, DataToCheck$RECTANGLE_LAT), FUN=sum)
+    # Aggregate by Year and lat/lon and EEZ
+    AggDataToCheck <- aggregate(DataToCheck[,c("TOTFISHDAYS")], by=list(DataToCheck$YEAR , DataToCheck$RECTANGLE_LON, DataToCheck$RECTANGLE_LAT,DataToCheck$EEZ_INDICATOR), FUN=sum)
     
     # Rename the columns produced by the aggregate function
     names(AggDataToCheck)[names(AggDataToCheck)=="Group.1"] <- "YearGroup"
     names(AggDataToCheck)[names(AggDataToCheck)=="Group.2"] <- "Lon"
     names(AggDataToCheck)[names(AggDataToCheck)=="Group.3"] <- "Lat"
+    names(AggDataToCheck)[names(AggDataToCheck)=="Group.4"] <- "EEZ"
     
     AggDataToCheck$Lon <- as.numeric(AggDataToCheck$Lon)
     AggDataToCheck$Lat <- as.numeric(AggDataToCheck$Lat)
     
     for (myYear in sort(unique(AggDataToCheck$YearGroup))){
-      p<- getMap(Year=myYear, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
+      p<- getMap(Year=myYear, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days", VariableForColour="EEZ")
       print(p)
     }
     
-    # p<- getMap(Year=2015, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
-    # print(p)
-    # 
-    # p<- getMap(Year=2016, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
-    # print(p)
-    # 
-    # p<- getMap(Year=2017, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
-    # print(p)
-    # 
-    # p<- getMap(Year=2018, DataToPlot=AggDataToCheck, VariableToPlot = "TOTFISHDAYS", ChartTitle = "Fishing Days")
-    # print(p)
     
   } else {
     print("No data to plot")
